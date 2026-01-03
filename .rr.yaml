@@ -1,0 +1,9 @@
+server:
+  command: "php worker.php"
+
+http:
+  address: "0.0.0.0:8800"
+  pool:
+    num_workers: 4 # Tùy thuộc vào số nhân CPU
+    max_jobs: 1000 # Restart worker sau 1000 request để tránh leak bộ nhớ
+

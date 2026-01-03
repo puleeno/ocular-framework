@@ -34,18 +34,41 @@ Ocular hoạt động như một lớp Proxy thông minh nằm trước WordPres
 ## 📁 Cấu trúc thư mục
 
 ```text
-ocular-app/
-├── app/
+ocular-project/
+├── app/                        # Nơi chứa logic ứng dụng của bạn
 │   ├── Http/
-│   │   ├── Middlewares/   # Các bộ lọc PSR-15
-│   │   └── Controllers/   # Logic xử lý nghiệp vụ
-│   ├── Providers/         # Đăng ký dịch vụ (DB, Cache, Redis)
-│   └── Models/            # Mapping dữ liệu phẳng (Ocular Mapping)
-├── bin/                   # RoadRunner binary & CLI tools
-├── core/                  # Nhân WordPress (WP-Core)
-├── public/                # File tĩnh và entry point dự phòng
-├── worker.php             # File thực thi chính cho RoadRunner
-└── .rr.yaml               # Cấu hình RoadRunner
+│   │   ├── Controllers/        # Xử lý logic API hoặc Web custom
+│   │   └── Middlewares/        # Các bộ lọc PSR-15 (Auth, Cache, v.v.)
+│   ├── Models/                 # Định nghĩa Schema cho Flat-tables (Ocular Mapping)
+│   └── Providers/              # Đăng ký Service (Database, Redis, Mailer)
+│
+├── bin/                        # Các tệp thực thi hệ thống
+│   ├── rr                      # RoadRunner binary
+│   └── console                 # CLI tool cho Ocular (Migration, Cache clear)
+│
+├── config/                     # Cấu hình Framework
+│   ├── app.php                 # Cấu hình chung
+│   ├── database.php            # Cấu hình DB cho Flat-tables
+│   └── routes.php              # Định nghĩa Route cho FastRoute
+│
+├── core/                       # NHÂN WORDPRESS (WP-CORE)
+│   ├── wp-admin/               # Giữ nguyên để quản trị
+│   ├── wp-includes/            # Giữ nguyên để tận dụng thư viện
+│   └── index.php               # Fallback cho các request truyền thống
+│
+├── content/                    # Tương đương với wp-content
+│   ├── plugins/                # Nơi chứa các plugin bên thứ 3 (WooCommerce, v.v.)
+│   ├── themes/                 # Nơi chứa các theme truyền thống
+│   └── mu-plugins/             # Các plugin bắt buộc để "lừa" WP core
+│
+├── storage/                    # Logs, Cache, Uploads
+├── vendor/                     # Composer dependencies
+│
+├── .rr.yaml                    # Cấu hình server RoadRunner
+├── worker.php                  # ENTRY POINT CHO ROADRUNNER (PSR-7/15 Worker)
+├── index.php                   # ENTRY POINT DỰ PHÒNG (Cho Apache/Nginx truyền thống)
+├── wp-config.php               # File cấu hình WordPress trung tâm
+└── composer.json               # Quản lý thư viện
 
 ```
 
@@ -64,10 +87,24 @@ ocular-app/
 ```bash
 composer create-project ocular/framework my-app
 cd my-app
-
 ```
 
-### 3. Cấu hình Worker (`worker.php`)
+### 3. Cài đặt WordPress Core (WP-CLI)
+
+Ocular tách biệt nhân WordPress (Core) vào một thư mục riêng để dễ dàng quản lý và tối ưu hóa. Sử dụng lệnh sau để tải WordPress Core vào thư mục `core/` mà không kèm theo các theme và plugin mặc định:
+
+```bash
+wp core download --skip-content --path=core
+```
+
+### 4. Cách thức hoạt động
+
+Khi đã có thư mục `core/`, Ocular sẽ:
+1.  **Isolated Core:** Giữ nhân WordPress sạch sẽ, không bị lẫn lộn dữ liệu framework.
+2.  **Explicit Bootstrapping:** Thông qua `Kernel->bootstrap()`, Ocular nạp WordPress chỉ khi cần thiết.
+3.  **Modern Content Path:** Các plugin và theme tùy chỉnh của bạn sẽ nằm trong thư mục `content/` (tương đương `wp-content`), giúp cấu trúc dự án chuẩn PSR-4 hơn.
+
+### 5. Cấu hình Worker (`worker.php`)
 
 ```php
 use Ocular\Kernel;

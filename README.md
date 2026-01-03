@@ -61,13 +61,15 @@ ocular-project/
 │   ├── themes/                 # Nơi chứa các theme truyền thống
 │   └── mu-plugins/             # Các plugin bắt buộc để "lừa" WP core
 │
+├── public/                     # Thư mục công khai (Web root)
+│   ├── index.php               # ENTRY POINT DỰ PHÒNG (Cho Apache/Nginx truyền thống)
+│   └── wp-config.php           # File cấu hình WordPress trung tâm
+│
 ├── storage/                    # Logs, Cache, Uploads
 ├── vendor/                     # Composer dependencies
 │
 ├── .rr.yaml                    # Cấu hình server RoadRunner
 ├── worker.php                  # ENTRY POINT CHO ROADRUNNER (PSR-7/15 Worker)
-├── index.php                   # ENTRY POINT DỰ PHÒNG (Cho Apache/Nginx truyền thống)
-├── wp-config.php               # File cấu hình WordPress trung tâm
 └── composer.json               # Quản lý thư viện
 
 ```
